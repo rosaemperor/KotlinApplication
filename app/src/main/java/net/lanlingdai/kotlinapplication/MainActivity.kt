@@ -1,19 +1,30 @@
 package net.lanlingdai.kotlinapplication
 
+import android.arch.lifecycle.ViewModelProviders
+import android.databinding.DataBindingUtil
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import net.lanlingdai.kotlinapplication.databinding.ActivityMainBinding
+import net.lanlingdai.kotlinapplication.viewmodels.MainViewModel
 
 class MainActivity : AppCompatActivity() , View.OnClickListener {
+    lateinit var view :View
+    lateinit var viewModel : MainViewModel
 
+    lateinit var binding : ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
+        binding = DataBindingUtil.setContentView(this,R.layout.activity_main)
+        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        binding.viewmodel = viewModel
         // Example of a call to a native method
-        sample_text.text = stringFromJNI()
-        main_primary_send1.text = stringMyJNI()
+        view  = View(this)
+         Log.d("view",""+view.id)
     }
 
     /**
@@ -33,7 +44,11 @@ class MainActivity : AppCompatActivity() , View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        when(v?.let { v.id }){
+            R.id.sample_text->{
+                Toast.makeText(this,"text",Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
 }
