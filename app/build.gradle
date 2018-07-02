@@ -42,13 +42,93 @@ android {
 
     flavorDimensions "JPUSH_CHANNEL"
     productFlavors{
-        wandoujia{
+        wandoujia {
             dimension "JPUSH_CHANNEL"
-            manifestPlaceholders = [JPUSH_CHANNEL: "wandoujia"]
+            manifestPlaceholders = [JPUSH_CHANNEL: "WANDOUJIA"]
         }
-        xiaomi{
+        lldtest {
             dimension "JPUSH_CHANNEL"
-            manifestPlaceholders=[JPUSH_CHANNEL: "xiaomi"]
+            manifestPlaceholders = [JPUSH_CHANNEL: "TEST"]
+        }
+        yingyongbao {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "YINGYONGBAO"]
+        }
+        sanliulingzhushou {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "QIHOO360"]
+        }
+        JPUSH_CHANNELed {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "JPUSH_CHANNEL"]
+        }
+        vivo {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "VIVO"]
+        }
+        oppo {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "OPPO"]
+        }
+        meizu {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "MEIZU"]
+        }
+        huawei {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "HUAWEI"]
+        }
+        xiaomi {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "XIAOMI"]
+        }
+        baidu {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "BAIDU"]
+        }
+        jiuyaoAndroid {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "91SHICHANG"]
+        }
+        PPzhushou {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "PPZHUSHOU"]
+        }
+        anzhi {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "ANZHI"]
+        }
+        yingyonghui {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "YINGYONGHUI"]
+        }
+        mumayi {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "MUMAYI"]
+        }
+        youyi {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "YOUYI"]
+        }
+        liqu {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "LIQU"]
+        }
+        tianyi {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "TIANYI"]
+        }
+        leshangdian {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "LESHANGDIAN"]
+        }
+        jifeng {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "JIFENG"]
+        }
+        woshangdian {
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "WOSHANGDIAN"]
         }
     }
 }
