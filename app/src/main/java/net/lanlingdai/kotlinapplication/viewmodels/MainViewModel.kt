@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import net.lanlingdai.kotlinapplication.base.BaseViewModel
+import net.lanlingdai.kotlinapplication.utils.DialogUtils
 import java.util.*
 
 class MainViewModel :BaseViewModel(){
@@ -11,7 +12,7 @@ class MainViewModel :BaseViewModel(){
     var steps = 0
     var numbers  = intArrayOf(90,20,78, 34, 12, 64, 5, 4, 62, 99, 98, 54, 56, 17, 18, 23, 34, 15, 35,101,120)
     fun clickHelloword(view : View){
-        Toast.makeText(view.context,"toast",Toast.LENGTH_LONG).show()
+        DialogUtils.showExitDialog(view.context)
         for (i in 0..numbers.size){
             for (n in i..numbers.size-1){
                 if (numbers[i]<numbers[n]){
