@@ -39,7 +39,20 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    flavorDimensions "JPUSH_CHANNEL"
+    productFlavors{
+        wandoujia{
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders = [JPUSH_CHANNEL: "wandoujia"]
+        }
+        xiaomi{
+            dimension "JPUSH_CHANNEL"
+            manifestPlaceholders=[JPUSH_CHANNEL: "xiaomi"]
+        }
+    }
 }
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
