@@ -25,7 +25,12 @@ class KChartTabView : RelativeLayout,View.OnClickListener{
     var mIndicatorColor = 0
 
     override fun onClick(v: View?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if(mSelectedIndex >= 0 && mSelectedIndex < mLlContainer.childCount ){
+            mLlContainer.getChildAt(mSelectedIndex).isSelected = false
+        }
+        mSelectedIndex =  mLlContainer.indexOfChild(v)
+        v?.let {v.isSelected = true  }
+        mTabSelectListener.onTabSelected(mSelectedIndex)
     }
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -60,6 +65,44 @@ class KChartTabView : RelativeLayout,View.OnClickListener{
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         parent.requestDisallowInterceptTouchEvent(true)
         return super.dispatchTouchEvent(ev)
+    }
+
+    /**
+     * 添加选项卡
+     */
+    fun addTab(text : String){
+        var tabView = TextView(context)
+        tabView.setOnClickListener(this)
+        tabView.text = text
+        tabView.setTextColor(mColorStateList)
+        mLlContainer.addView(tabView)
+        //默认选中第一个
+        if(mLlContainer.childCount == 1){
+            tabView.isSelected = true
+            mSelectedIndex = 0
+            onTabSelected(mSelectedIndex)
+        }
+    }
+
+    private fun onTabSelected(position: Int) {
+        if (mTabSelectListener != null){
+            mTabSelectListener.onTabSelected(position)
+        }
+    }
+    fun setTextColor(color : ColorStateList){
+
+        mColorStateList = color
+        for ( i in 0.. mLlContainer.childCount){
+          var tabView= mLlContainer.getChildAt(i) as TabView
+            tabView.setTextColor(mColorStateList)
+        }
+    }
+    fun setIndicatorColor(color : Int){
+        mIndicatorColor = color
+        var tabView : TabView
+        for( i in 0 .. mLlContainer.childCount ){
+            tabView= mLlContainer.getChildAt(i) as TabView
+            tabView.setIndicatorColor(mIndicatorColor)      }
     }
 
 

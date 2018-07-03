@@ -54,16 +54,16 @@ class MainActivity : AppCompatActivity() , View.OnClickListener {
         }
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-
-//            if(event!!.action == KeyEvent.KEYCODE_BACK){
-//                DialogUtils.showExitDialog(this)
-//                return true
-//            }else{
-//                return super.onKeyDown(keyCode, event)
-//            }
-
-
-    }
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+//
+////            if(event!!.action == KeyEvent.KEYCODE_BACK){
+////                DialogUtils.showExitDialog(this)
+////                return true
+////            }else{
+////                return super.onKeyDown(keyCode, event)
+////            }
+//
+//
+//    }
 
 }

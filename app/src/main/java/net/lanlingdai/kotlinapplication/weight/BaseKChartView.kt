@@ -11,6 +11,7 @@ import android.util.AttributeSet
 import android.view.ScaleGestureDetector
 import android.widget.AdapterViewAnimator
 import net.lanlingdai.kotlinapplication.R
+import java.util.*
 
 class BaseKChartView : ScrollAndScaleView{
     private var mTranslateX = Float.MIN_VALUE
@@ -166,13 +167,126 @@ class BaseKChartView : ScrollAndScaleView{
             canvas.save()
             canvas.scale(1f,1f)
             drawGird(canvas)
-//            drawK(canvas)
-//            drawText(canvas)
-//            drawValue(canvas,isLongPress ? mSelectedIndex : mStopIndex)
+            drawK(canvas)
+            drawText(canvas)
+            drawValue(canvas,isLongPress ? mSelectedIndex : mStopIndex)
             canvas.restore()
 
         }
 
+    }
+
+    /**
+     * 绘制文字部分
+     */
+     fun drawText(canvas: Canvas) {
+        var fontMetrics = mTextPaint.fontMetrics
+        var textHeight = fontMetrics.descent - fontMetrics.ascent
+        var baseLine = (textHeight - fontMetrics.bottom - fontMetrics.top) /2 //计算得到文字的位置
+        //---------------------  画上方K线图的值--------------
+        canvas.drawText(formatValue(mMainMaxValue) ,0f,(baseline+mMainRect.top).toFloat(), mTextPaint)
+        canvas.drawText(formatValue(mMainMinValue),0f,mMainRect.bottom - textHeight + baseLine ,mTextPaint)
+        var rowValue = (mMainMaxValue - -mMainMinValue) / mGridRows
+        var rowSpece = mMainRect.height()/ mGridRows\
+        for(i in 1.. mGridRows ){
+            var text = formatValue(rowValue * (mGridRows - i ) + mMainMinValue)
+            canvas.drawText(text,0f,fixTextY(rowSpece * i +mMainRect.top),mTextPaint)
+        }
+        //-----------------------绘制下方子图的值----------------------
+        canvas.drawText(mChildDraw.getValueFormatter().format(mChildMaxValue),0f,mChildRect.top+baseLine,mTextPaint)
+        canvas.drawText(mChildDraw.getValueFormatter().format(mChildMinValue),0f,mChildRect.bottom.toFloat(),mTextPaint)
+
+        //-----------------------绘制时间线---------------------------
+        var columnSpace = mWidth / mGridColumns
+        var y = mChildRect.bottom + baseLine
+        var startX = getX(mStartIndex) - mPointWidth / 2
+        var stopX  = getX(mStopIndex) + mPointWidth / 2
+        for(i in 1..mGridColumns ){
+            var translateX = xToTranslateX(columnSpace * i)
+            if (translateX >= startX && translateX <= stopX){
+                var index = indexOfTranslateX(translateX)
+                var text = formatDataTime(iAdapter.getDate(index))
+                canvas.drawText(text,columnSpace * i - mTextPaint.measureText(text) /2 ,y, mTextPaint)
+            }
+        }
+        var translateX = xToTranslateX(0)
+        if(translateX >= startX && translateX <= stopX){
+            canvas.drawText(formatDataTime(iAdapter.getDate(mStartIndex)),0f,y,mTextPaint)
+        }
+        translateX = xToTranslateX(mWidth)
+        if(translateX >= startX && translateX <= stopX){
+            var text = formatDataTime(iAdapter.getDate(mStopIndex))
+            canvas.drawText(text,mWidth- mTextPaint.measureText(text),y ,mTextPaint)
+        }
+        if(isLongPress){
+            var point = getItem(mSelectedIndex) as IKLine
+            var text = formatValue(point.getClosePrice())
+            var r = textHeight /2
+            y = getMainY(point.getClosePrice())
+            var x :Float = 0f
+            if(translateXtoX(getX(mSelectedIndex)) < mWidth){
+                x = 0f
+                canvas.drawRect(x,y-r,mTextPaint.measureText(text),y+r,mBackgroundPaint)
+            }else{
+                x = mWidth - mTextPaint.measureText(text)
+                canvas.drawRect(x,y-r,mWidth.toFloat(),y+r,mBackgroundPaint)
+            }
+            canvas.drawText(text,x,fixTextY(y),mTextPaint)
+        }
+
+    }
+
+    private fun translateXtoX(x: Float): Float {
+        return (mTranslateX +x) * mScaleX
+    }
+
+
+
+    /**
+     * 格式化时间
+     */
+    private fun formatDataTime(date: Date): String {
+       return mDataFormatter.format(date)
+    }
+
+
+    private fun formatValue(value: Float): String {
+        return mValueFormatter.format(value)
+    }
+
+    /**
+     * 绘制K线
+     */
+    private fun drawK(canvas: Canvas) {
+        canvas.save()
+        canvas.translate(mTranslateX*mScaleX,0f)
+        canvas.scale(mScaleX.toFloat() , 1f)
+        for (i in mStartIndex .. mStopIndex ){
+            var currentPoint = getItem(i)
+            var currentPointX = getX(i)
+            var lastPoint = if(i == 0) currentPoint else getX(i-1)
+            var lastX  = if(i == 0) currentPointX else getX(i-1)
+            mMainDraw?.let {
+                mMainDraw.drawTranslated(lastPoint,currentPoint,lastX,currentPointX,canvas,this,i)
+            }
+            mChildDraw.drawTranslated(lastPoint,currentPoint,lastX,currentPointX ,canvas ,this , i)
+        }
+        if(isLongPress){
+            var point = getItem(mSelectedIndex) as IKLine
+            var x = getX(mSelectedIndex)
+            var y  = getMainY(point.getClosePrice())
+            canvas.drawLine(x,mMainRect.top.toFloat(),x,mMainRect.bottom.toFloat(),mSelectedLintPaint)//绘制竖线
+            canvas.drawLine(-mTranslateX,y,-mTranslateX+mWidth/mScaleX , y , mSelectedLintPaint) // 绘制横线
+            canvas.drawLine(x,mChildRect.top.toFloat(),x,mChildRect.bottom.toFloat(),mSelectedLintPaint)
+        }
+    }
+
+     fun getMainY(value : Float): Float {
+        return (mMainMaxValue - value) * mMainScaleY + mMainRect.top
+    }
+
+    fun getChildY(value : Float) : Float{
+        return (mMainMaxValue - value) * mChildScaleY + mChildRect.top
     }
 
     /**
@@ -242,7 +356,7 @@ class BaseKChartView : ScrollAndScaleView{
     }
 
     private fun indexOfTranslateX(xToTranslateX: Float): Int {
-        return indexOfTranslateX(translationX, 0 , mItemCount -1)
+        return indexOfTranslateX(xToTranslateX, 0 , mItemCount -1)
     }
     private fun indexOfTranslateX(xToTranslateX: Float,start : Int ,end :Int) : Int{
         if(end == start){
@@ -273,5 +387,12 @@ class BaseKChartView : ScrollAndScaleView{
 
     private fun xToTranslateX(x: Int): Float {
         return -mTranslateX + x/mScaleX
+    }
+
+    /**
+     * 文字剧中问题
+     */
+    private fun fixTextY(i: Int): Float {
+
     }
 }
