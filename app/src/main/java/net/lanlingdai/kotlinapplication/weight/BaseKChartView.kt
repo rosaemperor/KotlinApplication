@@ -8,13 +8,16 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.support.v4.view.GestureDetectorCompat
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.widget.AdapterViewAnimator
 import net.lanlingdai.kotlinapplication.R
 import java.util.*
+import kotlin.collections.ArrayList
 
 class BaseKChartView : ScrollAndScaleView{
     private var mTranslateX = Float.MIN_VALUE
+    var mChildDrawPosition = 0
     private var mWidth = 0
     private var mTopPadding : Int = 0
     private var mBottomPadding : Int = 0
@@ -37,7 +40,7 @@ class BaseKChartView : ScrollAndScaleView{
     private var mSelectedIndex = 0
     private lateinit var mMainDraw : IChartDraw
     private lateinit var iAdapter : IAdapter
-
+    lateinit var mKChildTabView: KChartTabView
 
     private var mDataSetObserver : DataSetObserver = object : DataSetObserver(){
         override fun onChanged() {
@@ -52,7 +55,7 @@ class BaseKChartView : ScrollAndScaleView{
     }
     private var mItemCount = 0
     private lateinit var mChildDraw : IChartDraw
-    private var mChildDraws : List<IChartDraw> = ArrayList()
+    private var mChildDraws : ArrayList<IChartDraw> = ArrayList()
 
     private lateinit var mValueFormatter : IValueFormatter
     private lateinit var mDataFormatter : IDateTimeFormatter
@@ -112,14 +115,26 @@ class BaseKChartView : ScrollAndScaleView{
     }
 
     override fun getMinScrollX(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return -(mOverScrollRange / mScaleX).toInt()
     }
 
     override fun getMaxScrollX(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return Math.round(getMaxTranslateX() - getMinTranslateX())
     }
 
+    /**
+     * 获取平移的最大值
+     */
+    private fun getMaxTranslateX(): Float {
+      return  if(!isFullScreen()) getMinTranslateX() else mPointWidth / 2
+    }
 
+    /**
+     * 数据是否充满屏幕
+     */
+    private fun isFullScreen(): Boolean {
+        return mDataLen >= mWidth / mScaleX
+    }
 
 
     fun notifyChanged(){
@@ -133,13 +148,16 @@ class BaseKChartView : ScrollAndScaleView{
         invalidate()
     }
 
-
-
+    /**
+     *
+     */
     private fun setTranslateXFromScrollX(scrollX : Int){
         mTranslateX = scrollX + getMinTranslateX()
     }
 
-
+    /**
+     * 获取平移的最小值
+     */
     private fun getMinTranslateX() : Float{
         return -mDataLen + mWidth / mScaleX - mPointWidth /2
     }
@@ -169,9 +187,25 @@ class BaseKChartView : ScrollAndScaleView{
             drawGird(canvas)
             drawK(canvas)
             drawText(canvas)
-            drawValue(canvas,isLongPress ? mSelectedIndex : mStopIndex)
+            drawValue(canvas,if(isLongPress) mSelectedIndex else mStopIndex )
             canvas.restore()
 
+        }
+
+    }
+
+    private fun drawValue(canvas: Canvas, position: Int) {
+        var fontMetrics = mTextPaint.getFontMetrics()
+        var textHeight = fontMetrics.descent - fontMetrics.ascent
+        var baseLine = (textHeight - fontMetrics.bottom- fontMetrics.top )/2
+        if(position >= 0 && position < mItemCount){
+            var y = mMainRect.top + baseLine - textHeight
+            var x = 0f
+            mMainDraw .drawText(canvas,this, position, x, y)
+
+            y = mChildRect.top + baseLine
+            x = mTextPaint.measureText(mChildDraw.getValueFormatter().format(mChildMaxValue)+ "")
+            mChildDraw.drawText(canvas,this,position,x,y)
         }
 
     }
@@ -187,7 +221,7 @@ class BaseKChartView : ScrollAndScaleView{
         canvas.drawText(formatValue(mMainMaxValue) ,0f,(baseline+mMainRect.top).toFloat(), mTextPaint)
         canvas.drawText(formatValue(mMainMinValue),0f,mMainRect.bottom - textHeight + baseLine ,mTextPaint)
         var rowValue = (mMainMaxValue - -mMainMinValue) / mGridRows
-        var rowSpece = mMainRect.height()/ mGridRows\
+        var rowSpece = mMainRect.height()/ mGridRows
         for(i in 1.. mGridRows ){
             var text = formatValue(rowValue * (mGridRows - i ) + mMainMinValue)
             canvas.drawText(text,0f,fixTextY(rowSpece * i +mMainRect.top),mTextPaint)
@@ -231,7 +265,7 @@ class BaseKChartView : ScrollAndScaleView{
                 x = mWidth - mTextPaint.measureText(text)
                 canvas.drawRect(x,y-r,mWidth.toFloat(),y+r,mBackgroundPaint)
             }
-            canvas.drawText(text,x,fixTextY(y),mTextPaint)
+            canvas.drawText(text,x,fixTextY(y.toInt()),mTextPaint)
         }
 
     }
@@ -393,6 +427,117 @@ class BaseKChartView : ScrollAndScaleView{
      * 文字剧中问题
      */
     private fun fixTextY(i: Int): Float {
+        var fontMetrics = mTextPaint.getFontMetrics()
+        return  y + (fontMetrics.descent - fontMetrics.ascent) / 2 - fontMetrics.descent
+    }
+
+    fun dp2px(value : Float) : Int{
+        var fontScale = context.resources.displayMetrics.scaledDensity
+        return (value * fontScale + 0.5f).toInt()
+    }
+
+    override fun onLongPress(e: MotionEvent?) {
+        super.onLongPress(e)
+        e?.let {
+            var lastIndex = mSelectedIndex
+            calculateSelectedX(e.x)
+            if (lastIndex != mSelectedIndex){
+                onSelectedChanged(this,getItem(mSelectedIndex),mSelectedIndex)
+            }
+            invalidate()
+        }
 
     }
+
+     fun onSelectedChanged(baseKChartView: BaseKChartView, item: Any, mSelectedIndex: Int) {
+        mOnSelectedChangedListener.onSelectedChanged(baseKChartView,item,mSelectedIndex)
+    }
+
+    private fun calculateSelectedX(x: Float) {
+        mSelectedIndex = indexOfTranslateX(xToTranslateX(x.toInt()))
+        if(mSelectedIndex < mStartIndex){
+            mSelectedIndex = mStartIndex
+        }
+        if (mSelectedIndex > mStopIndex){
+            mSelectedIndex = mStopIndex
+        }
+    }
+
+    /**
+     * 设置子图的绘制方法
+     */
+    fun setChildDraw(position: Int){
+        this.mChildDraw = mChildDraws.get(position)
+        mChildDrawPosition = position
+        invalidate()
+    }
+    /**
+     * 给子区域添加画图方法
+     */
+    fun addChildDraw(name : String ,childDraw : IChartDraw){
+        mChildDraws.add(childDraw)
+        mKChildTabView.addTab(name)
+    }
+    /**
+     * 设置开始动画
+     */
+    fun startAnimation(){
+        mAnimator.start()
+    }
+    /**
+     * 设置动画时间
+     */
+    fun setAnimationDuration(duration : Long){
+        mAnimator.setDuration(duration)
+    }
+
+    /**
+     * 设置表格行数
+     */
+    fun setGridRows(gridRows : Int){
+        if(gridRows<1)
+            mGridRows= 1
+        else mGridRows = gridRows
+
+    }
+
+    /**
+     * 设置表格列数
+     */
+    fun setGridColumns(gridColumns : Int){
+        if (gridColumns <1) mGridColumns = 1 else mGridColumns =gridColumns
+    }
+
+    /**
+     * 获取上方的Padding
+     */
+    fun getTopPadding() : Float{
+        return mTopPadding.toFloat()
+    }
+
+    /**
+     * 获取图表的宽度
+     */
+    fun getChartWidth() : Int{
+        return mWidth
+    }
+    /**
+     * 设置表格线宽度
+     */
+    fun setGridLineWidth(width : Float){
+        mGridPaint.strokeWidth = width
+    }
+    /**
+     * 设置表格线颜色
+     */
+    fun setGridLineColor(color : Int){
+        mGridPaint.color = color
+    }
+
+
+
+
+
+
+
 }
