@@ -3,7 +3,7 @@ package net.lanlingdai.kotlinapplication.weight
 import android.graphics.Canvas
 import java.text.FieldPosition
 
-interface IChartDraw {
+interface IChartDraw<T> {
     /**
      * 需要滑动 物体draw方法
      *
@@ -15,7 +15,7 @@ interface IChartDraw {
      * @param lastX     上一个点的x坐标
      * @param curX      当前点的X坐标
      */
-    fun <T > drawTranslated (lastPoint : T,curPoint :T,lastX : Float,curX : Float,canvas: Canvas,view : BaseKChartView, position: Int)
+    fun  drawTranslated (lastPoint : T,curPoint :T,lastX : Float,curX : Float,canvas: Canvas,view : BaseKChartView, position: Int)
     /**
      * @param canvas
      * @param view
@@ -23,21 +23,21 @@ interface IChartDraw {
      * @param x        x的起始坐标
      * @param y        y的起始坐标
      */
-    fun drawText(canvas: Canvas,view: BaseKChartView,position: Int,x:Float,y:Float)
+     fun drawText(canvas: Canvas,view: BaseKChartView,position: Int,  x:Float,y:Float)
     /**
      * 获取当前实体中最大的值
      *
      * @param point
      * @return
      */
-    fun <T > getMaxPoint(point : T ) : Float
+    fun  getMaxPoint(point : T ) : Float
     /**
      * 获取当前实体中最小的值
      *
      * @param point
      * @return
      */
-    fun <T >getMinPoint(point : T) : Float
+    fun getMinPoint(point : T) : Float
     /**
      * 获取value格式化器
      */

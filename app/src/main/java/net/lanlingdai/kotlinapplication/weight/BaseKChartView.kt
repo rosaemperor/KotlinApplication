@@ -15,7 +15,7 @@ import net.lanlingdai.kotlinapplication.R
 import java.util.*
 import kotlin.collections.ArrayList
 
-class BaseKChartView : ScrollAndScaleView{
+abstract class BaseKChartView : ScrollAndScaleView{
     private var mTranslateX = Float.MIN_VALUE
     var mChildDrawPosition = 0
     private var mWidth = 0
@@ -36,10 +36,10 @@ class BaseKChartView : ScrollAndScaleView{
     private var mGridPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var mTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var mBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private var mSelectedLintPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private var mSelectedIndex = 0
-    private lateinit var mMainDraw : IChartDraw
-    private lateinit var iAdapter : IAdapter
+     var mSelectedLintPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+     var mSelectedIndex = 0
+    private lateinit var mMainDraw : IChartDraw<Any>
+     lateinit var iAdapter : IAdapter
     lateinit var mKChildTabView: KChartTabView
 
     private var mDataSetObserver : DataSetObserver = object : DataSetObserver(){
@@ -54,8 +54,8 @@ class BaseKChartView : ScrollAndScaleView{
         }
     }
     private var mItemCount = 0
-    private lateinit var mChildDraw : IChartDraw
-    private var mChildDraws : ArrayList<IChartDraw> = ArrayList()
+    private  lateinit var  mChildDraw : IChartDraw<Any>
+    private var  mChildDraws : ArrayList<IChartDraw<Any>>  = ArrayList()
 
     private lateinit var mValueFormatter : IValueFormatter
     private lateinit var mDataFormatter : IDateTimeFormatter
@@ -105,13 +105,6 @@ class BaseKChartView : ScrollAndScaleView{
         //缺少KChartTABView
         setTranslateXFromScrollX(mScrollX)
 
-    }
-    override fun onLeftSide() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onRightSide() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun getMinScrollX(): Int {
@@ -270,7 +263,7 @@ class BaseKChartView : ScrollAndScaleView{
 
     }
 
-    private fun translateXtoX(x: Float): Float {
+     fun translateXtoX(x: Float): Float {
         return (mTranslateX +x) * mScaleX
     }
 
@@ -279,12 +272,12 @@ class BaseKChartView : ScrollAndScaleView{
     /**
      * 格式化时间
      */
-    private fun formatDataTime(date: Date): String {
+     fun formatDataTime(date: Date): String {
        return mDataFormatter.format(date)
     }
 
 
-    private fun formatValue(value: Float): String {
+     fun formatValue(value: Float): String {
         return mValueFormatter.format(value)
     }
 
@@ -381,7 +374,7 @@ class BaseKChartView : ScrollAndScaleView{
         }
     }
 
-    private fun getItem(position: Int): Any {
+     fun getItem(position: Int): Any {
         if(iAdapter != null){
             return iAdapter.getItem(position)
         }else{
@@ -474,7 +467,7 @@ class BaseKChartView : ScrollAndScaleView{
     /**
      * 给子区域添加画图方法
      */
-    fun addChildDraw(name : String ,childDraw : IChartDraw){
+    fun<T> addChildDraw(name : String ,childDraw : IChartDraw<Any>){
         mChildDraws.add(childDraw)
         mKChildTabView.addTab(name)
     }
@@ -533,8 +526,27 @@ class BaseKChartView : ScrollAndScaleView{
     fun setGridLineColor(color : Int){
         mGridPaint.color = color
     }
+    /**
+     * 设置文字颜色
+     */
+    fun setTextColor(color : Int){
+        mTextPaint.color = color
+    }
+    /**
+     * 设置文字大小
+     */
+    fun setTextSize(textSize : Float){
+        mTextPaint.textSize = textSize
+    }
 
 
+
+    /**
+     * 绘制子区域的线
+     */
+    fun drawChildLine(canvas: Canvas, paint: Paint, startX: Float, startValue: Float, stopX: Float, stopValue: Float) {
+        canvas.drawLine(startX,getChildY(startValue),stopX, getChildY(stopValue), paint)
+    }
 
 
 

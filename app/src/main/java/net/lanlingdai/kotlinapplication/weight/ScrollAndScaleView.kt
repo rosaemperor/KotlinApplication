@@ -16,7 +16,7 @@ abstract class  ScrollAndScaleView : RelativeLayout ,GestureDetector.OnGestureLi
     protected  var mDetector :GestureDetectorCompat
     protected  var mScaleDetector : ScaleGestureDetector
     private  var mScroller : OverScroller
-    protected var isLongPress : Boolean = false
+     var isLongPress : Boolean = false
     protected var touch : Boolean = false
     protected var mMultipleTouch : Boolean = false
     private var mScrollEnable : Boolean = true
