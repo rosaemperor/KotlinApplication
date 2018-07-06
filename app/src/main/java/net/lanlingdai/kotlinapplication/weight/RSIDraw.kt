@@ -13,6 +13,7 @@ class RSIDraw : IChartDraw<IRSI>{
         view.drawChildLine(canvas , mRSI2Paint ,lastX , lastPoint.getRsi2() , curX , curPoint.getRsi2())
         view.drawChildLine(canvas , mRSI3Paint , lastX , lastPoint.getRsi3() ,curX ,curPoint.getRsi3())
     }
+    constructor(view : BaseKChartView)
 
     override fun drawText(canvas: Canvas, view: BaseKChartView, position: Int, x: Float, y: Float) {
         var text = ""

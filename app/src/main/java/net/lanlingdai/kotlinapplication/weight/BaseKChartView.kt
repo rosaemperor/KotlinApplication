@@ -54,8 +54,8 @@ abstract class BaseKChartView : ScrollAndScaleView{
         }
     }
     private var mItemCount = 0
-    private  lateinit var  mChildDraw : IChartDraw<Any>
-    private var  mChildDraws : ArrayList<IChartDraw<Any>>  = ArrayList()
+    private  lateinit  var  mChildDraw : IChartDraw<Any>
+    private var  mChildDraws : ArrayList<IChartDraw<T>>  = ArrayList()
 
     private lateinit var mValueFormatter : IValueFormatter
     private lateinit var mDataFormatter : IDateTimeFormatter
@@ -467,7 +467,7 @@ abstract class BaseKChartView : ScrollAndScaleView{
     /**
      * 给子区域添加画图方法
      */
-    fun<T> addChildDraw(name : String ,childDraw : IChartDraw<Any>){
+    fun<T> addChildDraw(name : String ,childDraw : IChartDraw<T>){
         mChildDraws.add(childDraw)
         mKChildTabView.addTab(name)
     }

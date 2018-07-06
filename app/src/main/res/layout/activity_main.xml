@@ -4,6 +4,9 @@
     <variable
         name="viewmodel"
         type="net.lanlingdai.kotlinapplication.viewmodels.MainViewModel"/>
+    <variable
+        name="viewmodel2"
+        type="net.lanlingdai.kotlinapplication.viewmodels.MainViewModel"/>
 </data>
 
 <android.support.constraint.ConstraintLayout
@@ -24,6 +27,27 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/text"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="@{(view)->viewmodel.clickHelloword(view)}"
+        android:id="@+id/text2"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/text4"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/text5"/>
 
-
+    <TextView
+        android:layout_width="match_parent"
+        app:dadf="adfadf"
+        android:layout_height="wrap_content"
+        android:id="@+id/text7"/>
 </android.support.constraint.ConstraintLayout></layout>
