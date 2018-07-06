@@ -34,7 +34,7 @@ abstract class BaseKChartView : ScrollAndScaleView{
     private var mGridRows =4
     private var mGridColumns =4
     private var mGridPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private var mTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+     var mTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var mBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
      var mSelectedLintPaint = Paint(Paint.ANTI_ALIAS_FLAG)
      var mSelectedIndex = 0
@@ -68,7 +68,7 @@ abstract class BaseKChartView : ScrollAndScaleView{
     private lateinit var mOnSelectedChangedListener: OnSelectedChangedListener
 
     private lateinit var mMainRect : Rect
-    private lateinit var mChildRect : Rect
+     lateinit var mChildRect : Rect
     private lateinit var mTabRect : Rect
     private  var mLineWidth : Float = 0f
 

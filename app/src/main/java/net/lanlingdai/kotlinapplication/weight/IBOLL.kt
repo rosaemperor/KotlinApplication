@@ -14,5 +14,5 @@ interface IBOLL {
     /**
      * 下轨线
      */
-    fun GetDn() : Float
+    fun getDn() : Float
 }
