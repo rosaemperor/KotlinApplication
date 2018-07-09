@@ -10,39 +10,41 @@ import android.support.v4.view.GestureDetectorCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
+import android.view.ViewGroup
 import android.widget.AdapterViewAnimator
+import android.widget.RelativeLayout
 import net.lanlingdai.kotlinapplication.R
 import java.util.*
 import kotlin.collections.ArrayList
 
-abstract class BaseKChartView : ScrollAndScaleView{
-    private var mTranslateX = Float.MIN_VALUE
+abstract class BaseKChartView constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : ScrollAndScaleView(context,attrs,defStyleAttr, defStyleRes){
+     var mTranslateX = Float.MIN_VALUE
     var mChildDrawPosition = 0
-    private var mWidth = 0
-    private var mTopPadding : Int = 0
-    private var mBottomPadding : Int = 0
-    private var mMainScaleY : Float =1f
-    private var mChildScaleY : Float = 1f
-    private var mDataLen : Float = 0f
-    private var mMainMaxValue = Float.MAX_VALUE
-    private var mMainMinValue = Float.MIN_VALUE
-    private var mChildMaxValue =Float.MAX_VALUE
-    private var mChildMinValue = Float.MIN_VALUE
-    private var mStartIndex = 0
-    private var mStopIndex = 0
-    private var mPointWidth : Float = 6f
-    private var mGridRows =4
-    private var mGridColumns =4
-    private var mGridPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+     var mWidth = 0
+     var mTopPadding : Int = 0
+     var mBottomPadding : Int = 0
+     var mMainScaleY : Float =1f
+     var mChildScaleY : Float = 1f
+     var mDataLen : Float = 0f
+     var mMainMaxValue = Float.MAX_VALUE
+     var mMainMinValue = Float.MIN_VALUE
+     var mChildMaxValue =Float.MAX_VALUE
+     var mChildMinValue = Float.MIN_VALUE
+     var mStartIndex = 0
+     var mStopIndex = 0
+     var mPointWidth : Float = 6f
+     var mGridRows =4
+     var mGridColumns =4
+     var mGridPaint = Paint(Paint.ANTI_ALIAS_FLAG)
      var mTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private var mBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+     var mBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
      var mSelectedLintPaint = Paint(Paint.ANTI_ALIAS_FLAG)
      var mSelectedIndex = 0
-    private lateinit var mMainDraw : IChartDraw<Any>
+       private lateinit var mMainDraw : IChartDraw<Any>
      lateinit var iAdapter : IAdapter
     lateinit var mKChildTabView: KChartTabView
 
-    private var mDataSetObserver : DataSetObserver = object : DataSetObserver(){
+     var mDataSetObserver : DataSetObserver = object : DataSetObserver(){
         override fun onChanged() {
             mItemCount = iAdapter.getCount()
             notifyChanged()
@@ -53,30 +55,29 @@ abstract class BaseKChartView : ScrollAndScaleView{
             notifyChanged()
         }
     }
-    private var mItemCount = 0
-    private  lateinit  var  mChildDraw : IChartDraw<Any>
-    private var  mChildDraws : ArrayList<IChartDraw<T>>  = ArrayList()
+     var mItemCount = 0
+      lateinit  var  mChildDraw : IChartDraw<Any>
+     var  mChildDraws : ArrayList<IChartDraw<Any>>  = ArrayList()
 
-    private lateinit var mValueFormatter : IValueFormatter
-    private lateinit var mDataFormatter : IDateTimeFormatter
+     lateinit var mValueFormatter : IValueFormatter
+     lateinit var mDataFormatter : IDateTimeFormatter
 
 //    protected lateinit var
 
-    private lateinit var mAnimator: ValueAnimator
-    private var mAnimatorDuration : Long = 500
-    private var mOverScrollRange : Float = 0f
-    private lateinit var mOnSelectedChangedListener: OnSelectedChangedListener
+     lateinit var mAnimator: ValueAnimator
+     var mAnimatorDuration : Long = 500
+     var mOverScrollRange : Float = 0f
+     lateinit var mOnSelectedChangedListener: OnSelectedChangedListener
 
-    private lateinit var mMainRect : Rect
+     lateinit var mMainRect : Rect
      lateinit var mChildRect : Rect
-    private lateinit var mTabRect : Rect
-    private  var mLineWidth : Float = 0f
+     lateinit var mTabRect : Rect
+      var mLineWidth : Float = 0f
 
 
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
+    constructor(context: Context?) : this(context , null)
+    constructor(context: Context?, attrs: AttributeSet?) : this(context, attrs , 0)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : this(context, attrs, defStyleAttr, 0)
     init {
         setWillNotDraw(false)
         mDetector = GestureDetectorCompat(context,this)
@@ -86,6 +87,16 @@ abstract class BaseKChartView : ScrollAndScaleView{
 
 
         //因为KChart TabView还没有定义，，，所以暂时不添加，以后补上
+
+        mKChildTabView = KChartTabView(context)
+        addView(mKChildTabView, RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT , ViewGroup.LayoutParams.WRAP_CONTENT))
+        mKChildTabView.setOnTabSelectedListenter(object : TabSelectListener{
+            override fun onTabSelected(position: Int) {
+                setChildDraw(position)
+            }
+        })
+
+
 
         mAnimator = ValueAnimator.ofFloat(0f,1f)
         mAnimator.duration= mAnimatorDuration
@@ -103,6 +114,7 @@ abstract class BaseKChartView : ScrollAndScaleView{
         this.mWidth = w
         initRect(w,h)
         //缺少KChartTABView
+        mKChildTabView.translationY = mMainRect.bottom.toFloat()
         setTranslateXFromScrollX(mScrollX)
 
     }
@@ -118,14 +130,14 @@ abstract class BaseKChartView : ScrollAndScaleView{
     /**
      * 获取平移的最大值
      */
-    private fun getMaxTranslateX(): Float {
+     fun getMaxTranslateX(): Float {
       return  if(!isFullScreen()) getMinTranslateX() else mPointWidth / 2
     }
 
     /**
      * 数据是否充满屏幕
      */
-    private fun isFullScreen(): Boolean {
+     fun isFullScreen(): Boolean {
         return mDataLen >= mWidth / mScaleX
     }
 
@@ -144,20 +156,21 @@ abstract class BaseKChartView : ScrollAndScaleView{
     /**
      *
      */
-    private fun setTranslateXFromScrollX(scrollX : Int){
+     fun setTranslateXFromScrollX(scrollX : Int){
         mTranslateX = scrollX + getMinTranslateX()
     }
 
     /**
      * 获取平移的最小值
      */
-    private fun getMinTranslateX() : Float{
+     fun getMinTranslateX() : Float{
         return -mDataLen + mWidth / mScaleX - mPointWidth /2
     }
 
-    private fun initRect(w : Int,h : Int){
+     fun initRect(w : Int,h : Int){
         //不行了，，，没有KChartTabView.有点进行不下去
-        var mMainChildSpace  = 0
+
+        var mMainChildSpace  = mKChildTabView.measuredHeight
         var displayHeight = h - mTopPadding - mBottomPadding - mMainChildSpace
         var mMainHeight = displayHeight * 0.75f.toInt()
         var mChildHeight = displayHeight * 0.25f.toInt()
@@ -187,7 +200,7 @@ abstract class BaseKChartView : ScrollAndScaleView{
 
     }
 
-    private fun drawValue(canvas: Canvas, position: Int) {
+     fun drawValue(canvas: Canvas, position: Int) {
         var fontMetrics = mTextPaint.getFontMetrics()
         var textHeight = fontMetrics.descent - fontMetrics.ascent
         var baseLine = (textHeight - fontMetrics.bottom- fontMetrics.top )/2
@@ -284,7 +297,7 @@ abstract class BaseKChartView : ScrollAndScaleView{
     /**
      * 绘制K线
      */
-    private fun drawK(canvas: Canvas) {
+     fun drawK(canvas: Canvas) {
         canvas.save()
         canvas.translate(mTranslateX*mScaleX,0f)
         canvas.scale(mScaleX.toFloat() , 1f)
@@ -319,7 +332,7 @@ abstract class BaseKChartView : ScrollAndScaleView{
     /**
      * 绘制背景表格
      */
-    private fun drawGird(canvas: Canvas) {
+     fun drawGird(canvas: Canvas) {
         //-----------------------上方k线图------------------------
         var rowSpace = mMainRect.height() / mGridRows
         for( i in 0.. mGridRows ){
@@ -332,7 +345,7 @@ abstract class BaseKChartView : ScrollAndScaleView{
         }
     }
 
-    private fun calculateValue() {
+     fun calculateValue() {
         if(!isLongPress){
             mSelectedIndex = -1
         }
@@ -382,10 +395,10 @@ abstract class BaseKChartView : ScrollAndScaleView{
         }
     }
 
-    private fun indexOfTranslateX(xToTranslateX: Float): Int {
+     fun indexOfTranslateX(xToTranslateX: Float): Int {
         return indexOfTranslateX(xToTranslateX, 0 , mItemCount -1)
     }
-    private fun indexOfTranslateX(xToTranslateX: Float,start : Int ,end :Int) : Int{
+     fun indexOfTranslateX(xToTranslateX: Float,start : Int ,end :Int) : Int{
         if(end == start){
             return start
         }
@@ -412,14 +425,14 @@ abstract class BaseKChartView : ScrollAndScaleView{
         return position * mPointWidth
     }
 
-    private fun xToTranslateX(x: Int): Float {
+     fun xToTranslateX(x: Int): Float {
         return -mTranslateX + x/mScaleX
     }
 
     /**
      * 文字剧中问题
      */
-    private fun fixTextY(i: Int): Float {
+     fun fixTextY(i: Int): Float {
         var fontMetrics = mTextPaint.getFontMetrics()
         return  y + (fontMetrics.descent - fontMetrics.ascent) / 2 - fontMetrics.descent
     }
@@ -446,7 +459,7 @@ abstract class BaseKChartView : ScrollAndScaleView{
         mOnSelectedChangedListener.onSelectedChanged(baseKChartView,item,mSelectedIndex)
     }
 
-    private fun calculateSelectedX(x: Float) {
+     fun calculateSelectedX(x: Float) {
         mSelectedIndex = indexOfTranslateX(xToTranslateX(x.toInt()))
         if(mSelectedIndex < mStartIndex){
             mSelectedIndex = mStartIndex
@@ -467,7 +480,7 @@ abstract class BaseKChartView : ScrollAndScaleView{
     /**
      * 给子区域添加画图方法
      */
-    fun<T> addChildDraw(name : String ,childDraw : IChartDraw<T>){
+    fun addChildDraw(name : String ,childDraw : IChartDraw<Any>){
         mChildDraws.add(childDraw)
         mKChildTabView.addTab(name)
     }
@@ -548,7 +561,9 @@ abstract class BaseKChartView : ScrollAndScaleView{
         canvas.drawLine(startX,getChildY(startValue),stopX, getChildY(stopValue), paint)
     }
 
-
+    fun setMainDraw(mainDraw: IChartDraw<Any>){
+        this.mMainDraw = mainDraw
+    }
 
 
 

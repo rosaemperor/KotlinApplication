@@ -10,7 +10,8 @@ import android.view.ScaleGestureDetector
 import android.widget.OverScroller
 import android.widget.RelativeLayout
 
-abstract class  ScrollAndScaleView : RelativeLayout ,GestureDetector.OnGestureListener,
+abstract class  ScrollAndScaleView constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int)
+    : RelativeLayout(context,attrs,defStyleAttr,defStyleRes) ,GestureDetector.OnGestureListener,
                            ScaleGestureDetector.OnScaleGestureListener{
     protected var mScrollX : Int = 0
     protected  var mDetector :GestureDetectorCompat
@@ -19,15 +20,15 @@ abstract class  ScrollAndScaleView : RelativeLayout ,GestureDetector.OnGestureLi
      var isLongPress : Boolean = false
     protected var touch : Boolean = false
     protected var mMultipleTouch : Boolean = false
-    private var mScrollEnable : Boolean = true
-    private var mScaleEnable : Boolean = true
+     var mScrollEnable : Boolean = true
+     var mScaleEnable : Boolean = true
     protected var mScaleX  = 1
     protected var mScaleXMax = 2f
     protected var mScaleXMin  = 0.5f
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
+    constructor(context: Context?) : this(context , null)
+    constructor(context: Context?, attrs: AttributeSet?) : this(context, attrs,0)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : this(context, attrs, defStyleAttr,0)
+
     init {
         setWillNotDraw(false)
         mDetector = GestureDetectorCompat(context, this)

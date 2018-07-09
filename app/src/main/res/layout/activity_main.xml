@@ -9,11 +9,12 @@
         type="net.lanlingdai.kotlinapplication.viewmodels.MainViewModel"/>
 </data>
 
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
@@ -44,10 +45,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/text5"/>
-
-    <TextView
+    <net.lanlingdai.kotlinapplication.weight.KChartTabView
         android:layout_width="match_parent"
-        app:dadf="adfadf"
-        android:layout_height="wrap_content"
-        android:id="@+id/text7"/>
-</android.support.constraint.ConstraintLayout></layout>
+        android:layout_height="match_parent"/>
+
+</LinearLayout></layout>

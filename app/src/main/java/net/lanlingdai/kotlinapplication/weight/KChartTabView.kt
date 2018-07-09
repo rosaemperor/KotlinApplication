@@ -12,11 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.TabHost
 import android.widget.TextView
 import net.lanlingdai.kotlinapplication.R
 import java.util.jar.Attributes
 
-class KChartTabView : RelativeLayout,View.OnClickListener{
+class KChartTabView constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes),View.OnClickListener{
     lateinit var mLlContainer : LinearLayout
     lateinit var mTvFullScreen : TextView
     lateinit var mTabSelectListener : TabSelectListener
@@ -32,10 +33,9 @@ class KChartTabView : RelativeLayout,View.OnClickListener{
         v?.let {v.isSelected = true  }
         mTabSelectListener.onTabSelected(mSelectedIndex)
     }
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
+    constructor(context: Context?) : this(context,null)
+    constructor(context: Context?, attrs: AttributeSet?) : this(context, attrs, 0)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : this(context, attrs, defStyleAttr,0)
 
     init {
         var view = LayoutInflater.from(context).inflate(R.layout.layout_tab,null,false)
@@ -56,9 +56,7 @@ class KChartTabView : RelativeLayout,View.OnClickListener{
 
         })
         mTvFullScreen.isSelected = true
-        mColorStateList?.let {
-            mTvFullScreen.setTextColor(mColorStateList)
-        }
+
 
     }
 
@@ -89,13 +87,14 @@ class KChartTabView : RelativeLayout,View.OnClickListener{
             mTabSelectListener.onTabSelected(position)
         }
     }
-    fun setTextColor(color : ColorStateList){
+    fun setTextColor(color : ColorStateList?){
 
-        mColorStateList = color
+        mColorStateList = color!!
         for ( i in 0.. mLlContainer.childCount){
           var tabView= mLlContainer.getChildAt(i) as TabView
             tabView.setTextColor(mColorStateList)
         }
+        mTvFullScreen.setTextColor(mColorStateList)
     }
     fun setIndicatorColor(color : Int){
         mIndicatorColor = color
@@ -105,6 +104,9 @@ class KChartTabView : RelativeLayout,View.OnClickListener{
             tabView.setIndicatorColor(mIndicatorColor)      }
     }
 
+    fun setOnTabSelectedListenter(onTabSelectListener: TabSelectListener){
+        mTabSelectListener = onTabSelectListener
+    }
 
 
 }

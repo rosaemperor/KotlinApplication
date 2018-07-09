@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity() , View.OnClickListener {
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this,R.layout.activity_main)
-        binding.text7
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         binding.viewmodel = viewModel
         // Example of a call to a native method
