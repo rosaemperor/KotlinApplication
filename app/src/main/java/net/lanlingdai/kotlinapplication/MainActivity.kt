@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() , View.OnClickListener {
         binding = DataBindingUtil.setContentView(this,R.layout.activity_main)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         binding.viewmodel = viewModel
+        viewModel.setLifecycle(lifecycle)
         // Example of a call to a native method
         view  = View(this)
          Log.d("view",""+view.id)
@@ -56,16 +57,10 @@ class MainActivity : AppCompatActivity() , View.OnClickListener {
         }
     }
 
-//    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-//
-////            if(event!!.action == KeyEvent.KEYCODE_BACK){
-////                DialogUtils.showExitDialog(this)
-////                return true
-////            }else{
-////                return super.onKeyDown(keyCode, event)
-////            }
-//
-//
-//    }
+    override fun onResume() {
+        Log.d("viewModel","onResume")
+        super.onResume()
+
+    }
 
 }

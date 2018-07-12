@@ -86,7 +86,7 @@ abstract class BaseKChartView constructor(context: Context?, attrs: AttributeSet
         mBottomPadding = resources.getDimension(R.dimen.chart_bottom_padding).toInt()
 
 
-        //因为KChart TabView还没有定义，，，所以暂时不添加，以后补上
+        //因为KChart TabView还没有定义，，，所以暂时不添加，以后补上  已经补上了
 
         mKChildTabView = KChartTabView(context)
         addView(mKChildTabView, RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT , ViewGroup.LayoutParams.WRAP_CONTENT))

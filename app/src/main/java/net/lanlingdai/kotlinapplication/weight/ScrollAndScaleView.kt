@@ -117,7 +117,7 @@ abstract class  ScrollAndScaleView constructor(context: Context?, attrs: Attribu
             return
         }
         var oldx = mScrollX
-        mScrollX = x ;
+        mScrollX = x
         if(mScrollX < getMinScrollX()){
             mScrollX =getMinScrollX()
             onRightSide()

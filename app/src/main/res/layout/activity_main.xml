@@ -47,6 +47,7 @@
         android:id="@+id/text5"/>
     <net.lanlingdai.kotlinapplication.weight.KChartTabView
         android:layout_width="match_parent"
+        android:visibility="gone"
         android:layout_height="match_parent"/>
 
 </LinearLayout></layout>

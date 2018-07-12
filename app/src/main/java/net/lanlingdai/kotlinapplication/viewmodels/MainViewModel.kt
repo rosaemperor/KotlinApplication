@@ -1,5 +1,6 @@
 package net.lanlingdai.kotlinapplication.viewmodels
 
+import android.arch.lifecycle.LifecycleOwner
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -14,7 +15,7 @@ class MainViewModel :BaseViewModel(){
     fun clickHelloword(view : View){
         DialogUtils.showExitDialog(view.context)
         for (i in 0..numbers.size){
-            for (n in i..numbers.size-1){
+            for (n in i until numbers.size){
                 if (numbers[i]<numbers[n]){
                     num=numbers[i]
                     numbers[i]=numbers[n]
@@ -46,5 +47,10 @@ class MainViewModel :BaseViewModel(){
 
 
         return numbers
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+
+        super.onResume(owner)
     }
 }
