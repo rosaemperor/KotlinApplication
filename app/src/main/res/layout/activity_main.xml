@@ -31,10 +31,14 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="加入"
+        android:padding="30dp"
+        android:onClick="@{(view)->viewmodel.insertStudent(view)}"
         android:id="@+id/text"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="查询全部"
         android:onClick="@{(view)->viewmodel.clickHelloword(view)}"
         android:id="@+id/text2"/>
     <TextView

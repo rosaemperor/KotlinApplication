@@ -4,11 +4,15 @@ import android.arch.lifecycle.LifecycleOwner
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import net.lanlingdai.kotlinapplication.application.KotlinApplication
 import net.lanlingdai.kotlinapplication.base.BaseViewModel
+import net.lanlingdai.kotlinapplication.dao.StudentRespository
+import net.lanlingdai.kotlinapplication.entity.Student
 import net.lanlingdai.kotlinapplication.utils.DialogUtils
 import java.util.*
 
 class MainViewModel :BaseViewModel(){
+    lateinit var respository : StudentRespository
     var num =0
     var steps = 0
     var numbers  = intArrayOf(90,20,78, 34, 12, 64, 5, 4, 62, 99, 98, 54, 56, 17, 18, 23, 34, 15, 35,101,120)
@@ -53,4 +57,16 @@ class MainViewModel :BaseViewModel(){
 
         super.onResume(owner)
     }
+    fun insertStudent(view : View){
+        respository = StudentRespository(view.context.applicationContext as KotlinApplication)
+        var student : Student = Student()
+        student.ID = 1
+        respository.insert(student)
+
+        var students = respository.getStudents()
+        Log.d("student",""+students.get(1).ID)
+    }
+
+
+
 }
