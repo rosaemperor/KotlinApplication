@@ -1,18 +1,27 @@
 package net.lanlingdai.kotlinapplication.viewmodels
 
 import android.arch.lifecycle.LifecycleOwner
+import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Observer
+import android.databinding.ObservableField
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.google.gson.Gson
+import io.reactivex.Observable
 import net.lanlingdai.kotlinapplication.application.KotlinApplication
 import net.lanlingdai.kotlinapplication.base.BaseViewModel
 import net.lanlingdai.kotlinapplication.dao.StudentRespository
 import net.lanlingdai.kotlinapplication.entity.Student
 import net.lanlingdai.kotlinapplication.utils.DialogUtils
 import java.util.*
+import kotlin.math.log
 
-class MainViewModel :BaseViewModel(){
+
+class MainViewModel  :BaseViewModel(){
+    lateinit var liveData : MutableLiveData<String>
     lateinit var respository : StudentRespository
+
     var num =0
     var steps = 0
     var numbers  = intArrayOf(90,20,78, 34, 12, 64, 5, 4, 62, 99, 98, 54, 56, 17, 18, 23, 34, 15, 35,101,120)
@@ -61,11 +70,42 @@ class MainViewModel :BaseViewModel(){
         respository = StudentRespository(view.context.applicationContext as KotlinApplication)
         var student : Student = Student()
         student.ID = 1
-        respository.insert(student)
+        var thread = Thread(){
+            kotlin.run {
+//                respository.insertOrUpdate(student)
+                var students = respository.getStudents()
 
-        var students = respository.getStudents()
-        Log.d("student",""+students.get(1).ID)
+                Log.d("student",""+students.get(0).name)
+            }
+        }
+        thread.start()
+        liveData.value= "value"
+
+
+
     }
+
+    override fun onCreate(owner: LifecycleOwner) {
+        liveData = MutableLiveData()
+        liveData.value = "livedata测试"
+        var text = ObservableField<String>()
+
+        var observer = Observer<String> {
+            t: String? ->
+            Log.d("TAG", "TAG:$t")
+        }
+        liveData.observe(owner,observer)
+    }
+
+    fun useRxJava(view : View){
+        Toast.makeText(view.context,"useRxJava",Toast.LENGTH_LONG).show()
+        var testText = ObservableField<String>()
+        testText.set("test")
+        var gson = Gson()
+        var string = gson.toJson(testText)
+        Log.d("TAG","$string")
+    }
+
 
 
 

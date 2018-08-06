@@ -19,4 +19,7 @@ class StudentRespository constructor(application: KotlinApplication){
     fun getStudents(): List<Student> {
         return studentDao.getAllStudents()
     }
+    fun insertOrUpdate(student: Student){
+        studentDao.insertOrUpdate(student)
+    }
 }

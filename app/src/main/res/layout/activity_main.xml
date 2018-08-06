@@ -44,6 +44,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="text4"
+        android:onClick="@{(view)->viewmodel.useRxJava(view)}"
         android:id="@+id/text4"/>
     <TextView
         android:layout_width="match_parent"

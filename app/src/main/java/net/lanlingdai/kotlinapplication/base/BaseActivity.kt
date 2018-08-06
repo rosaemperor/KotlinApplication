@@ -23,4 +23,6 @@ abstract class BaseActivity : AppCompatActivity(){
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
     abstract fun getLifecycleObserver() : BaseViewModel
+
+    abstract fun initViewModel()
 }

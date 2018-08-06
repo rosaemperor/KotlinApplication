@@ -17,7 +17,7 @@ abstract class StudentRoomDatabase : RoomDatabase() {
         fun getDatabase(context: Context): StudentRoomDatabase? {
             synchronized(StudentRoomDatabase::class.java){
                 instance = Room.databaseBuilder(context.applicationContext,
-                        StudentRoomDatabase::class.java  ,"Student").build()
+                        StudentRoomDatabase::class.java  ,"student_database").build()
 
             }
 
